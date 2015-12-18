@@ -5,21 +5,17 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +31,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
-import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
@@ -50,9 +45,9 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-    private String TAG = MainActivity.class.getSimpleName();
+    private String TAG = LoginActivity.class.getSimpleName();
     // 구글
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -86,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());// Button 불러오기전에 ..
         mCallbackManager = CallbackManager.Factory.create();
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.login);
 
         imageView = (ImageView)findViewById(R.id.imageView);
         (button = (Button)findViewById(R.id.button)).setOnClickListener(this);
@@ -97,8 +92,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mPlusSignInButton = (SignInButton) findViewById(R.id.g_sign_in_button);
         mPlusSignInButton.setSize(SignInButton.SIZE_WIDE);
         mPlusSignInButton.setOnClickListener(this);
-
-        //setGooglePlusButtonText(mPlusSignInButton, "");
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -151,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             @Override
             public void onCancel() {
-                Toast.makeText(MainActivity.this, "User cancelled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "User cancelled", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(MainActivity.this, "Error on Login, check your facebook app_id", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Error on Login, check your facebook app_id", Toast.LENGTH_LONG).show();
             }
 
         });
@@ -273,22 +266,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void getProfileInformation() {
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi
-                        .getCurrentPerson(mGoogleApiClient);
+                Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
                 String id = currentPerson.getId();
                 String personPhotoUrl = currentPerson.getImage().getUrl();
                 String personGooglePlusProfile = currentPerson.getUrl();
                 String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 
-                Log.i("TEST", "Name: " + personName + ", plusProfile: "
+                Log.i(TAG, "id" +id +"Name: " + personName + ", plusProfile: "
                         + personGooglePlusProfile + ", email: " + email
                         + ", Image: " + personPhotoUrl);
                 // by default the profile url gives 50x50 px image only
                 // we can replace the value with whatever dimension we want by
                 // replacing sz=X
-                personPhotoUrl = personPhotoUrl.substring(0,
-                        personPhotoUrl.length() - 2)
+                personPhotoUrl = personPhotoUrl.substring(0,personPhotoUrl.length() - 2)
                         + PROFILE_PIC_SIZE;
 
                 setView(personPhotoUrl,personName);
@@ -326,6 +317,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         new LoadProfileImage(this.imageView).execute(url);
         this.textView.setText(name);
     }
+
+
 
     private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;

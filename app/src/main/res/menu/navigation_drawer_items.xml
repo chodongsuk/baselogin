@@ -1,0 +1,44 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/id1"
+            android:title="Sub item 1"/>
+        <item
+            android:id="@+id/id2"
+            android:title="Sub item 2"/>
+        <item
+            android:id="@+id/id3"
+            android:title="Sub item 3"/>
+        <item
+            android:id="@+id/id4"
+            android:title="Sub item 4"/>
+        <item
+            android:id="@+id/id5"
+            android:title="Sub item 5"/>
+        <item
+            android:id="@+id/id6"
+            android:title="Sub item 6"/>
+        <item
+            android:id="@+id/id7"
+            android:title="Sub item 7"/>
+        <item
+            android:id="@+id/id8"
+            android:title="Sub item 8"/>
+        <item
+            android:id="@+id/id9"
+            android:title="Sub item 9"/>
+        <item
+            android:id="@+id/id10"
+            android:title="Sub item 10"/>
+        <item
+            android:id="@+id/id11"
+            android:title="Sub item 11"/>
+
+    </group>
+
+
+</menu>
