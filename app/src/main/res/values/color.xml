@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_primary">#008080</color>
+    <color name="app_primary_dark">#45645C</color>
+    <color name="material_deep_orange_700">#ffc53929</color>
+</resources>
