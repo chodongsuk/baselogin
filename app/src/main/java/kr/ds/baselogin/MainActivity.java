@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     picture = picture.getJSONObject("data");
                                     Log.i(TAG, picture.getString("url"));
 
-                                    setView(picture.getString("url"), object.getString("name"));
+                                    setView(picture.getString("url")+"?type=large", object.getString("name"));
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -197,7 +197,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        if(!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
     }
 
     protected void onStop() {
@@ -274,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
+                String id = currentPerson.getId();
                 String personPhotoUrl = currentPerson.getImage().getUrl();
                 String personGooglePlusProfile = currentPerson.getUrl();
                 String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
