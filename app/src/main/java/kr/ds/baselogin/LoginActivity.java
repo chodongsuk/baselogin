@@ -1,7 +1,6 @@
 
 package kr.ds.baselogin;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,18 +10,11 @@ import org.json.JSONObject;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -35,18 +27,18 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener{
+
+
     private String TAG = LoginActivity.class.getSimpleName();
     // 구글
     /* Request code used to invoke sign in user interactions. */
@@ -60,21 +52,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private boolean mSignInClicked;
 
-    private SignInButton mPlusSignInButton;
+    private Button mPlusSignInButton;
     private ConnectionResult mConnectionResult;
 
     // 페이스북
-    private LoginButton mFacebookLoginButton;
+    private Button mFacebookLoginButton;
     private CallbackManager mCallbackManager;
 
     // 공통
     private ProgressDialog ringProgressDialog;
-
-
-    private ImageView imageView;
-    private Button button;
-    private TextView textView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,16 +69,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         mCallbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.login);
 
-        imageView = (ImageView)findViewById(R.id.imageView);
-        (button = (Button)findViewById(R.id.button)).setOnClickListener(this);
-        textView = (TextView)findViewById(R.id.textview);
-
-
         // Google+ Login
-        mPlusSignInButton = (SignInButton) findViewById(R.id.g_sign_in_button);
-        mPlusSignInButton.setSize(SignInButton.SIZE_WIDE);
+        mPlusSignInButton = (Button) findViewById(R.id.g_sign_in_button);
         mPlusSignInButton.setOnClickListener(this);
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -102,57 +81,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
 
         // Facebook Login
-        mFacebookLoginButton = (LoginButton) findViewById(R.id.f_sign_in_button);
-        List<String> permissionNeeds = Arrays.asList("user_photos", "email", "user_birthday", "public_profile");
-        mFacebookLoginButton.setReadPermissions(permissionNeeds);
-
-        mFacebookLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                // App code
-                GraphRequest request = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(
-                                    JSONObject object,
-                                    GraphResponse response) {
-                                // Application code
-                                try {
-                                    Log.i(TAG, object.getString("name"));
-                                    Log.i(TAG, object.getString("id"));
-                                    JSONObject picture = object.getJSONObject("picture");
-                                    picture = picture.getJSONObject("data");
-                                    Log.i(TAG, picture.getString("url"));
-
-                                    setView(picture.getString("url")+"?type=large", object.getString("name"));
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        });
-
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender,birthday,picture");
-                request.setParameters(parameters);
-                request.executeAsync();
-
-                Log.i(TAG, "onSuccess");
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(LoginActivity.this, "User cancelled", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                Toast.makeText(LoginActivity.this, "Error on Login, check your facebook app_id", Toast.LENGTH_LONG).show();
-            }
-
-        });
+        mFacebookLoginButton = (Button)findViewById(R.id.f_sign_in_button);
+        mFacebookLoginButton.setOnClickListener(this);
     }
 
     public void disconnectFromFacebook() {
@@ -167,27 +97,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }).executeAsync();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    /**fackbook end **/
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        // noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
     protected void onStart() {
         super.onStart();
         if(!mGoogleApiClient.isConnected()) {
@@ -201,22 +112,23 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             mGoogleApiClient.disconnect();
         }
     }
-
     /**
      * Method to resolve any signin errors
      * */
     private void resolveSignInError() {
+        Log.i(TAG,"resolveSignInError");
         if (mConnectionResult.hasResolution()) {
             try {
-                mIntentInProgress = true;
+                Log.i(TAG,"try");
+                mIntentInProgress = true; //처음 성공하면 보내고
                 mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
-            } catch (IntentSender.SendIntentException e) {
+            } catch (IntentSender.SendIntentException e) {//취소하거나 더 이상 요청을 실행 할 수 없습니다 PendingIntent를 통해 보내려고 할 때 예외가 발생합니다.
+                Log.i(TAG,"IntentSender.SendIntentException");
                 mIntentInProgress = false;
                 mGoogleApiClient.connect();
             }
         }
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.i(TAG,"onConnectionFailed");
@@ -225,14 +137,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             return;
         }
 
-        if (!mIntentInProgress) {
+        if (!mIntentInProgress) {//실패했을때
             // Store the ConnectionResult for later usage
             mConnectionResult = result;
-            if (mSignInClicked) {
+            if (mSignInClicked) {//클릭했을때..
                 // The user has already clicked 'sign-in' so we attempt to
                 // resolve all
                 // errors until the user is signed in, or they cancel.
-                resolveSignInError();
+                resolveSignInError();//다시실행..
             }
         }
     }
@@ -249,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             if (!mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
             }
-        }else{
+        }else{//페이스북
             mCallbackManager.onActivityResult(requestCode, responseCode, intent);
         }
     }
@@ -258,40 +170,42 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnected(Bundle arg0) {
         Log.i(TAG,"onConnected");
         mSignInClicked = false;
+        next();
+        //Plus.AccountApi.getAccountName(mGoogleApiClient);
         Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
         // Get user's information
-        getProfileInformation();
+        //getProfileInformation();
 
     }
-    private void getProfileInformation() {
-        try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-                String personName = currentPerson.getDisplayName();
-                String id = currentPerson.getId();
-                String personPhotoUrl = currentPerson.getImage().getUrl();
-                String personGooglePlusProfile = currentPerson.getUrl();
-                String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-
-                Log.i(TAG, "id" +id +"Name: " + personName + ", plusProfile: "
-                        + personGooglePlusProfile + ", email: " + email
-                        + ", Image: " + personPhotoUrl);
-                // by default the profile url gives 50x50 px image only
-                // we can replace the value with whatever dimension we want by
-                // replacing sz=X
-                personPhotoUrl = personPhotoUrl.substring(0,personPhotoUrl.length() - 2)
-                        + PROFILE_PIC_SIZE;
-
-                setView(personPhotoUrl,personName);
-
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "Person information is null", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void getProfileInformation() {
+//        try {
+//            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+//                Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+//                String personName = currentPerson.getDisplayName();
+//                String id = currentPerson.getId();
+//                String personPhotoUrl = currentPerson.getImage().getUrl();
+//                String personGooglePlusProfile = currentPerson.getUrl();
+//                String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+//
+//                Log.i(TAG, "id" +id +"Name: " + personName + ", plusProfile: "
+//                        + personGooglePlusProfile + ", email: " + email
+//                        + ", Image: " + personPhotoUrl);
+//                // by default the profile url gives 50x50 px image only
+//                // we can replace the value with whatever dimension we want by
+//                // replacing sz=X
+//                personPhotoUrl = personPhotoUrl.substring(0,personPhotoUrl.length() - 2)
+//                        + PROFILE_PIC_SIZE;
+//
+//               //setView(personPhotoUrl,personName);
+//
+//            } else {
+//                Toast.makeText(getApplicationContext(),
+//                        "Person information is null", Toast.LENGTH_LONG).show();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onConnectionSuspended(int arg0) {
@@ -313,36 +227,41 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    public void setView(String url, String name){
-        new LoadProfileImage(this.imageView).execute(url);
-        this.textView.setText(name);
-    }
+//    public void setView(String url, String name){
+//        new LoadProfileImage(this.imageView).execute(url);
+//        this.textView.setText(name);
+//    }
 
 
 
-    private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
+//    private class LoadProfileImage extends AsyncTask<String, Void, Bitmap> {
+//        ImageView bmImage;
+//
+//        public LoadProfileImage(ImageView bmImage) {
+//            this.bmImage = bmImage;
+//        }
+//
+//        protected Bitmap doInBackground(String... urls) {
+//            String urldisplay = urls[0];
+//            Bitmap mIcon11 = null;
+//            try {
+//                InputStream in = new java.net.URL(urldisplay).openStream();
+//                mIcon11 = BitmapFactory.decodeStream(in);
+//            } catch (Exception e) {
+//                Log.e("Error", e.getMessage());
+//                e.printStackTrace();
+//            }
+//            return mIcon11;
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            bmImage.setImageBitmap(result);
+//        }
+//    }
 
-        public LoadProfileImage(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
+    public void next(){
+        Intent nextintent = new Intent(this, MainActivity.class);
+        startActivity(nextintent);
     }
 
     @Override
@@ -351,10 +270,63 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             case R.id.g_sign_in_button:
                 signInWithGplus();
                 break;
-            case R.id.button:
-                signOutFromGplus();
-                disconnectFromFacebook();
+            case R.id.f_sign_in_button:
+                LoginManager loginManager = LoginManager.getInstance();
+                List<String> permissionNeeds = Arrays.asList("user_photos", "email", "user_birthday", "public_profile");
+                loginManager.logInWithReadPermissions(this, permissionNeeds);
+                loginManager.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+
+                        next();
+
+                        // App code
+//                        GraphRequest request = GraphRequest.newMeRequest(
+//                                loginResult.getAccessToken(),
+//                                new GraphRequest.GraphJSONObjectCallback() {
+//                                    @Override
+//                                    public void onCompleted(
+//                                            JSONObject object,
+//                                            GraphResponse response) {
+//                                        // Application code
+//                                        try {
+//                                            Log.i(TAG, object.getString("name"));
+//                                            Log.i(TAG, object.getString("id"));
+//                                            JSONObject picture = object.getJSONObject("picture");
+//                                            picture = picture.getJSONObject("data");
+//                                            Log.i(TAG, picture.getString("url"));
+//
+//                                            //setView(picture.getString("url")+"?type=large", object.getString("name"));
+//
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//
+//                                    }
+//                                });
+
+//                        Bundle parameters = new Bundle();
+//                        parameters.putString("fields", "id,name,email,gender,birthday,picture");
+//                        request.setParameters(parameters);
+//                        request.executeAsync();
+
+                        Log.i(TAG, "onSuccess");
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(LoginActivity.this, "User cancelled", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Toast.makeText(LoginActivity.this, "Error on Login, check your facebook app_id", Toast.LENGTH_LONG).show();
+                    }
+
+                });
                 break;
         }
     }
+
+
 }
